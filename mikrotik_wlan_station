@@ -1,0 +1,68 @@
+mikrotik_wlan_station_default_values = ((10, 5), (10, 5), (-75, -80))
+
+def inventory_mikrotik_wlan_station(info):
+    inventory = []
+    for name, iftype, status, tx, rx, signal in info:
+        if iftype == '71' and len(tx) > 0 and status == '1':
+            inventory.append((name, mikrotik_wlan_station_default_values))
+    return inventory
+
+def check_mikrotik_wlan_station(item, params, info):
+    # unpack thresholds
+    txwarn, txcrit = params[0]
+    rxwarn, rxcrit = params[1]
+    signalwarn, signalcrit = params[2]
+
+    for name, iftype, status, tx, rx, signal in info:
+        if name == item:
+            perfdata = [
+                ('tx', (int(tx) / 1000000), txwarn, txcrit, 0, 300),
+                ('rx', (int(rx) / 1000000), rxwarn, rxcrit, 0, 300),
+                ('signal', signal, signalwarn, signalcrit, -100, 0)
+            ]
+            summary = 'Tx: %s Mbit, Rx: %s Mbit, Signal: %s dB' % (
+                (int(tx) / 1000000),
+                (int(rx) / 1000000),
+                signal
+            ),
+
+            if (int(tx) / 1000000) < txcrit or (int(rx) / 1000000) < rxcrit or int(signal) < signalcrit:
+                return (
+                    2,
+                    'CRITICAL - %s' % summary,
+                    perfdata
+                )
+            elif (int(tx) / 1000000) < txwarn or (int(rx) / 1000000) < rxwarn or int(signal) < signalwarn:
+                return (
+                    1,
+                    'WARNING - %s' % summary,
+                    perfdata
+                )
+            else:
+                return (
+                    0,
+                    'OK - %s' % summary,
+                    perfdata
+                )
+    return (3, 'UNKNOWN - WLAN not found in output')
+
+check_info['mikrotik_wlan_station'] = {
+    'check_function':           check_mikrotik_wlan_station,
+    'inventory_function':       inventory_mikrotik_wlan_station,
+    'service_description':      'WLAN %s',
+    'has_perfdata':             True
+}
+
+snmp_info['mikrotik_wlan_station'] = (
+    '.1.3.6.1', [
+        '2.1.2.2.1.2',
+        '2.1.2.2.1.3',
+        '2.1.2.2.1.8',
+        '4.1.14988.1.1.1.1.1.2',
+        '4.1.14988.1.1.1.1.1.3',
+        '4.1.14988.1.1.1.1.1.4'
+    ]
+)
+
+snmp_scan_functions['mikrotik_wlan_station'] = \
+    lambda oid: oid('.1.3.6.1.4.1.14988.1.1.1.1.1.*') != None
