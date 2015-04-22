@@ -51,6 +51,7 @@ def check_mikrotik_wlan_station(item, params, info):
 check_info['mikrotik_wlan_station'] = {
     'check_function':           check_mikrotik_wlan_station,
     'inventory_function':       inventory_mikrotik_wlan_station,
+    'group':                    'mikrotik_wlan_station',
     'service_description':      'WLAN %s',
     'has_perfdata':             True
 }

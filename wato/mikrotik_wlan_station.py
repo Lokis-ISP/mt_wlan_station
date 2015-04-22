@@ -8,20 +8,20 @@ register_check_parameters(
         elements = [
             Tuple(
                 elements = [
-                    Integer(title = _('Tx critical'), unit=_('Mbit')),
                     Integer(title = _('Tx warning'), unit=_('Mbit')),
+                    Integer(title = _('Tx critical'), unit=_('Mbit')),
                 ],
             ),
             Tuple(
                 elements = [
-                    Integer(title = _('Rx critical'), unit=_('Mbit')),
                     Integer(title = _('Rx warning'), unit=_('Mbit')),
+                    Integer(title = _('Rx critical'), unit=_('Mbit')),
                 ],
             ),
             Tuple(
                 elements = [
-                    Integer(title = _('Signal critical'), unit=_('dB')),
                     Integer(title = _('Signal warning'), unit=_('dB')),
+                    Integer(title = _('Signal critical'), unit=_('dB')),
                 ],
             ),
         ],
